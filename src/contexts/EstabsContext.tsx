@@ -11,8 +11,10 @@ export type EstabProps = {
 type EstabsContextData = {
     estab: EstabProps;
     isSynced: boolean;
+    visible: boolean;
     toggleEstab: (data: EstabProps) => void;
     setSynced: () => void;
+    setIsVisible: () => void;
 }
 
 type EstabsProviderProps = {
@@ -21,12 +23,7 @@ type EstabsProviderProps = {
 
 export const EstabsContext = createContext({} as EstabsContextData);
 
-import { useNavigation } from '@react-navigation/native'
-import { StackNavigationList } from "../routes/app.routes";
-import { StackNavigationProp } from '@react-navigation/stack'
-
 export function EstabsProvider({children}: EstabsProviderProps){
-    const navigation = useNavigation<StackNavigationProp<StackNavigationList>>()
     const [estab, setEstab] = useState<EstabProps>({
         empresa: 1,
         num_estab: 1,
@@ -35,6 +32,14 @@ export function EstabsProvider({children}: EstabsProviderProps){
         tp_estab: 'MATRIZ'
     })
     const [isSynced, setIsSynced] = useState(false)
+    const [visible, setVisible] = useState(false)
+
+    function setSynced() {
+        setIsSynced(true)
+    }
+    function setIsVisible() {
+        setVisible(previousState => !previousState)
+    }
 
     function toggleEstab(data: EstabProps) {
         setEstab({
@@ -44,15 +49,11 @@ export function EstabsProvider({children}: EstabsProviderProps){
             abreviacao: data.abreviacao,
             tp_estab: data.tp_estab
         })
-        navigation.navigate('Home')
-    }
-
-    function setSynced() {
-        setIsSynced(true)
+        setIsVisible()
     }
 
     return(
-        <EstabsContext.Provider value={{estab, isSynced, toggleEstab, setSynced}}>
+        <EstabsContext.Provider value={{estab, isSynced, visible, toggleEstab, setSynced, setIsVisible}}>
             {children}
         </EstabsContext.Provider>
     )

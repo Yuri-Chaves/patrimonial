@@ -25,7 +25,7 @@ import { StackNavigationList } from "../../routes/app.routes";
 import { StackNavigationProp } from '@react-navigation/stack'
 
 export function EstabsList() {
-    const { toggleEstab } = useContext(EstabsContext)
+    const { toggleEstab, setIsVisible } = useContext(EstabsContext)
     const [estabs, setEstabs] = useState<EstabsModel[]>([])
     const [search, setSearch] = useState('')
     const inputRef = useRef<TextInput>(null)
@@ -61,12 +61,6 @@ export function EstabsList() {
         }
     }, [search])
 
-    useEffect(() => {
-        setTimeout(() => {
-            inputRef.current?.focus();
-        }, 370);
-    }, []);
-
     const searching = (e: string) => {
         setSearch(e)
         fetchData()
@@ -79,7 +73,7 @@ export function EstabsList() {
     return (
         <>
             <Container>
-                <Button onPress={() => navigation.navigate('Home')}>
+                <Button onPress={setIsVisible}>
                     <FontAwesome5 name="reply" size={14} color="#D40000" />
                     <Text textColor="#D40000">Cancelar</Text>
                 </Button>

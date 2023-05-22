@@ -1,5 +1,5 @@
 import React, { useContext, useState, useRef } from "react";
-import { ImageBackground, StyleSheet, Switch, TextInput, ToastAndroid } from "react-native";
+import { ImageBackground, Modal, StyleSheet, Switch, TextInput, ToastAndroid } from "react-native";
 import { useNetInfo } from "@react-native-community/netinfo";
 
 import { FontAwesome5 } from '@expo/vector-icons'
@@ -23,6 +23,7 @@ import {
     SwitchContainer,
     SwitchContent
 } from "./style";
+import { EstabsList } from "../EstabsList";
 
 export function Home() {
     const primary = "#005FDF"
@@ -30,7 +31,7 @@ export function Home() {
     const netInfo = useNetInfo()
     const [isEnabled, setIsEnabled] = useState<boolean>(false);
     const [cod_coletado, setCod_coletado] = useState('')
-    const { estab } = useContext(EstabsContext)
+    const { estab, visible, setIsVisible } = useContext(EstabsContext)
     const navigation = useNavigation<StackNavigationProp<StackNavigationList>>()
     const inputRef = useRef<TextInput>(null)
 
@@ -47,6 +48,7 @@ export function Home() {
     }
 
     async function handleSave() {
+        console.log(cod_coletado.length)
         if (cod_coletado.length > 5) {
             await database.write(async () => {
                 await database.get<ItmcolModel>("Item_coletado").create(data => {
@@ -64,19 +66,15 @@ export function Home() {
     }
 
     const handleChange = (e: string) => {
-		setCod_coletado(e)
-        if (isEnabled) {
-           	 if(e.length > 5){
+        setCod_coletado(e)
+        if (!isEnabled) {
+            if (e.length < 2) {
+                setCod_coletado('')
+            } else {
+                setCod_coletado(e)
                 handleSave()
-        	}
-       	} else {
-        	if(e.length < 2){
-               	setCod_coletado('')
-        	}else{
-               	setCod_coletado(e)
-               	handleSave()
             }
-        } 
+        }
     }
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     return (
@@ -101,12 +99,12 @@ export function Home() {
                 </InputContainer>
                 <PressableContainer>
                     {netInfo.isConnected && (
-                        <Pressable onPress={ handleSync } >
+                        <Pressable onPress={handleSync} >
                             <Text textColor={primary} size="16px">Enviar dados</Text>
                             <FontAwesome5 name="share" size={14} color={primary} />
                         </Pressable>
                     )}
-                    <Pressable onPress={() => navigation.navigate('Estabs')}>
+                    <Pressable onPress={setIsVisible}>
                         <Text textColor={primary} size="16px">Selecionar local</Text>
                         <FontAwesome5 name="map-marked-alt" size={14} color={primary} />
                     </Pressable>
@@ -125,6 +123,13 @@ export function Home() {
                     </SwitchContent>
                 </SwitchContainer>
             </Container>
+            <Modal
+                animationType="slide"
+                visible={visible}
+                onRequestClose={setIsVisible}
+            >
+                <EstabsList />
+            </Modal>
         </ImageBackground>
     )
 }
