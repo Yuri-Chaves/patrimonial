@@ -1,12 +1,14 @@
 import React, { useContext, useState, useRef } from "react";
-import { ImageBackground, Modal, StyleSheet, Switch, TextInput, ToastAndroid } from "react-native";
-import { useNetInfo } from "@react-native-community/netinfo";
+import { ImageBackground, Keyboard, Modal, StyleSheet, Switch, TextInput, ToastAndroid } from "react-native";
 
 import { FontAwesome5 } from '@expo/vector-icons'
 
 import { database } from "../../databases";
 import { ItmcolModel } from "../../databases/models/itmcolModel";
 import { EstabsContext } from "../../contexts/EstabsContext";
+import { EstabsList } from "../EstabsList";
+
+import { Q } from '@nozbe/watermelondb'
 
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationList } from "../../routes/app.routes";
@@ -23,43 +25,43 @@ import {
     SwitchContainer,
     SwitchContent
 } from "./style";
-import { EstabsList } from "../EstabsList";
 
 export function Home() {
     const primary = "#005FDF"
     const gray = "#333333"
-    const netInfo = useNetInfo()
     const [isEnabled, setIsEnabled] = useState<boolean>(false);
     const [cod_coletado, setCod_coletado] = useState('')
     const { estab, visible, setIsVisible } = useContext(EstabsContext)
-    const navigation = useNavigation<StackNavigationProp<StackNavigationList>>()
     const inputRef = useRef<TextInput>(null)
 
-    async function handleSync() {
-        const itmcolCollection = database.get<ItmcolModel>("Item_coletado");
-        const response = await itmcolCollection.query().fetch();
-        if (response.length > 0) {
-            ToastAndroid.showWithGravityAndOffset('Enviando dados', ToastAndroid.SHORT, ToastAndroid.TOP, 0, 35)
-            console.log(response)
-            await database.write(async () => { await itmcolCollection.query().destroyAllPermanently() })
-        } else {
-            ToastAndroid.showWithGravityAndOffset('Não há itens coletados', ToastAndroid.SHORT, ToastAndroid.TOP, 0, 35)
-        }
-    }
+    const navigation = useNavigation<StackNavigationProp<StackNavigationList>>()
 
     async function handleSave() {
-        console.log(cod_coletado.length)
         if (cod_coletado.length > 5) {
-            await database.write(async () => {
-                await database.get<ItmcolModel>("Item_coletado").create(data => {
-                    data.cod_coletado = cod_coletado
-                    data.empresa_coletado = estab.empresa
-                    data.estab_coletado = estab.num_estab
-                    data.coleted_at_dt = new Date().toLocaleDateString()
-                    data.coleted_at_hr = new Date().toLocaleTimeString('pt-BR')
+            const itmcolCollection = database.get<ItmcolModel>("Item_coletado")
+            const dbData = await itmcolCollection.query(Q.where('cod_coletado', Q.like(`${cod_coletado}`))).fetch()
+            if (dbData.length > 0) {
+                await database.write(async () => {
+                    await dbData[0].update(data => {
+                        data.empresa_coletado = estab.empresa
+                        data.estab_coletado = estab.num_estab
+                        data.coleted_at_dt = new Date().toLocaleDateString()
+                        data.coleted_at_hr = new Date().toLocaleTimeString('pt-BR')
+                    })
                 })
-            })
-            ToastAndroid.showWithGravityAndOffset('Coletado', ToastAndroid.SHORT, ToastAndroid.TOP, 15, 15)
+                ToastAndroid.showWithGravityAndOffset('Atualizado', ToastAndroid.SHORT, ToastAndroid.TOP, 15, 15)
+            } else {
+                await database.write(async () => {
+                    await database.get<ItmcolModel>("Item_coletado").create(data => {
+                        data.cod_coletado = cod_coletado
+                        data.empresa_coletado = estab.empresa
+                        data.estab_coletado = estab.num_estab
+                        data.coleted_at_dt = new Date().toLocaleDateString()
+                        data.coleted_at_hr = new Date().toLocaleTimeString('pt-BR')
+                    })
+                })
+                ToastAndroid.showWithGravityAndOffset('Coletado', ToastAndroid.SHORT, ToastAndroid.TOP, 15, 15)
+            }
             setCod_coletado('')
         }
         inputRef.current?.focus()
@@ -76,6 +78,11 @@ export function Home() {
             }
         }
     }
+    const setLocal = () => {
+        inputRef.current?.blur()
+        setIsVisible()
+    }
+
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     return (
         <ImageBackground source={require('../../../assets/Borboleta.png')} resizeMode="contain" style={styles.image}>
@@ -87,7 +94,7 @@ export function Home() {
                 <InputContainer>
                     <FontAwesome5 name="barcode" size={14} color={gray} />
                     <Input
-                        autoFocus={true}
+                        // autoFocus={true}
                         inputMode='numeric'
                         keyboardType='numeric'
                         maxLength={7}
@@ -98,13 +105,11 @@ export function Home() {
                     />
                 </InputContainer>
                 <PressableContainer>
-                    {netInfo.isConnected && (
-                        <Pressable onPress={handleSync} >
-                            <Text textColor={primary} size="16px">Enviar dados</Text>
-                            <FontAwesome5 name="share" size={14} color={primary} />
-                        </Pressable>
-                    )}
-                    <Pressable onPress={setIsVisible}>
+                    <Pressable onPress={() => navigation.navigate("ColetsList")} >
+                        <Text textColor={primary} size="16px">Itens coletados</Text>
+                        <FontAwesome5 name="list" size={14} color={primary} />
+                    </Pressable>
+                    <Pressable onPress={setLocal}>
                         <Text textColor={primary} size="16px">Selecionar local</Text>
                         <FontAwesome5 name="map-marked-alt" size={14} color={primary} />
                     </Pressable>

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { FlatList, ListRenderItemInfo, StyleSheet, TextInput } from "react-native";
+import { FlatList, ListRenderItemInfo, StyleSheet, TextInput, Keyboard } from "react-native";
+
 
 import { Q } from '@nozbe/watermelondb'
 
@@ -17,20 +18,14 @@ import {
 
 import { database } from "../../databases";
 import { EstabsModel } from "../../databases/models/estabsModel";
-import { ListItem } from "../../components/Item";
+import { ListItem } from "../../components/ItemEstab";
 import { EstabsContext } from "../../contexts/EstabsContext";
-
-import { useNavigation } from '@react-navigation/native'
-import { StackNavigationList } from "../../routes/app.routes";
-import { StackNavigationProp } from '@react-navigation/stack'
 
 export function EstabsList() {
     const { toggleEstab, setIsVisible } = useContext(EstabsContext)
     const [estabs, setEstabs] = useState<EstabsModel[]>([])
     const [search, setSearch] = useState('')
     const inputRef = useRef<TextInput>(null)
-
-    const navigation = useNavigation<StackNavigationProp<StackNavigationList>>()
 
     async function fetchData() {
         const estabsCollection = database.get<EstabsModel>("Estabelecimentos");
@@ -61,6 +56,19 @@ export function EstabsList() {
         }
     }, [search])
 
+    useEffect(() => {
+        setTimeout(() => {
+            inputRef.current?.focus()
+        }, 200);
+    }, [])
+
+    useEffect(() =>{
+        Keyboard.addListener('keyboardDidHide', () => {
+            inputRef.current?.blur()
+            console.log('keyboardDidHide')
+        })
+    }, [])
+
     const searching = (e: string) => {
         setSearch(e)
         fetchData()
@@ -80,6 +88,7 @@ export function EstabsList() {
                 <SearchContainer style={styles.searchContainerBorders}>
                     <SearchContent>
                         <SearchInput
+                            // autoFocus={true}
                             placeholder='Buscar estab'
                             placeholderTextColor='#BDBDBD'
                             inputMode='text'
