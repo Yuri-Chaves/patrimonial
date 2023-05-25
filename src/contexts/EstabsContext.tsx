@@ -3,6 +3,10 @@ import { ToastAndroid } from "react-native";
 import { database } from "../databases";
 import { ItmcolModel } from "../databases/models/itmcolModel";
 
+import { useNavigation } from '@react-navigation/native'
+import { StackNavigationList } from "../routes/app.routes";
+import { StackNavigationProp } from '@react-navigation/stack'
+
 export type EstabProps = {
     empresa: number;
     num_estab: number;
@@ -41,6 +45,8 @@ export function EstabsProvider({ children }: EstabsProviderProps) {
     const [visible, setVisible] = useState(false)
     const [filter, setFilter] = useState(false)
 
+    const navigation = useNavigation<StackNavigationProp<StackNavigationList>>()
+
     function setSynced() {
         setIsSynced(true)
     }
@@ -68,10 +74,11 @@ export function EstabsProvider({ children }: EstabsProviderProps) {
         if (response.length > 0) {
             ToastAndroid.showWithGravityAndOffset('Enviando dados', ToastAndroid.SHORT, ToastAndroid.TOP, 0, 35)
             console.log(response)
-            // await database.write(async () => { await itmcolCollection.query().destroyAllPermanently() })
+            await database.write(async () => { await itmcolCollection.query().destroyAllPermanently() })
         } else {
             ToastAndroid.showWithGravityAndOffset('Não há itens coletados', ToastAndroid.SHORT, ToastAndroid.TOP, 0, 35)
         }
+        navigation.goBack()
     }
 
     return (

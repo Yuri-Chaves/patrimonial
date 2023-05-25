@@ -65,7 +65,6 @@ export function EstabsList() {
     useEffect(() =>{
         Keyboard.addListener('keyboardDidHide', () => {
             inputRef.current?.blur()
-            console.log('keyboardDidHide')
         })
     }, [])
 
