@@ -20,4 +20,31 @@ export class ItmcolModel extends Model {
     @field('coleted_at_hr')
     coleted_at_hr!: string;
 
+    @field('status')
+    status!: string;
+
+    @field('nome_equip')
+    nome_equip!: string;
+
+    @field('tipo_equip')
+    tipo_equip!: number;
+
+    @field('placa')
+    placa!: string;
+
+    @field('empresa')
+    empresa!: number;
+
+    @field('estab')
+    estab!: number;
+
+    @field('setor')
+    setor!: number;
+
+    @field('local')
+    local!: number;
+
+    @field('dt_atual')
+    dt_atual!: string;
+
 }

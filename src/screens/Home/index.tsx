@@ -1,5 +1,5 @@
 import React, { useContext, useState, useRef } from "react";
-import { ImageBackground, Keyboard, Modal, StyleSheet, Switch, TextInput, ToastAndroid } from "react-native";
+import { ImageBackground, Modal, StyleSheet, Switch, TextInput, ToastAndroid } from "react-native";
 
 import { FontAwesome5 } from '@expo/vector-icons'
 
@@ -30,7 +30,8 @@ export function Home() {
     const primary = "#005FDF"
     const gray = "#333333"
     const [isEnabled, setIsEnabled] = useState<boolean>(false);
-    const [cod_coletado, setCod_coletado] = useState('')
+    const [cod_coletado, setCod_coletado] = useState<string>('')
+
     const { estab, visible, setIsVisible } = useContext(EstabsContext)
     const inputRef = useRef<TextInput>(null)
 
@@ -47,6 +48,15 @@ export function Home() {
                         data.estab_coletado = estab.num_estab
                         data.coleted_at_dt = new Date().toLocaleDateString()
                         data.coleted_at_hr = new Date().toLocaleTimeString('pt-BR')
+                        if(data.nome_equip){
+                            if(data.empresa_coletado == data.empresa && data.estab_coletado == data.estab){
+                                data.status = 'Verificado'
+                            }else{
+                                data.status = 'Divergência'
+                            }
+                        }else{
+                            data.status = 'Pendente'
+                        }
                     })
                 })
                 ToastAndroid.showWithGravityAndOffset('Atualizado', ToastAndroid.SHORT, ToastAndroid.TOP, 15, 15)
@@ -58,6 +68,7 @@ export function Home() {
                         data.estab_coletado = estab.num_estab
                         data.coleted_at_dt = new Date().toLocaleDateString()
                         data.coleted_at_hr = new Date().toLocaleTimeString('pt-BR')
+                        data.status = 'Pendente'
                     })
                 })
                 ToastAndroid.showWithGravityAndOffset('Coletado', ToastAndroid.SHORT, ToastAndroid.TOP, 15, 15)

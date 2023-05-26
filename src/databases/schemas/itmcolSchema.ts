@@ -23,5 +23,41 @@ export const itmcolSchema = tableSchema({
             name: 'coleted_at_hr',
             type: 'string',
         },
+        {
+            name: 'status',
+            type: 'string',
+        },
+        {
+            name: 'nome_equip',
+            type: 'string',
+        },
+        {
+            name: 'tipo_equip',
+            type: 'number',
+        },
+        {
+            name: 'placa',
+            type: 'string',
+        },
+        {
+            name: 'empresa',
+            type: 'number',
+        },
+        {
+            name: 'estab',
+            type: 'number',
+        },
+        {
+            name: 'setor',
+            type: 'number',
+        },
+        {
+            name: 'local',
+            type: 'number',
+        },
+        {
+            name: 'dt_atual',
+            type: 'string',
+        },
     ]
 })
