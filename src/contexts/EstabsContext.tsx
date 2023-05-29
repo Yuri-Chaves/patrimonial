@@ -84,7 +84,7 @@ export function EstabsProvider({ children }: EstabsProviderProps) {
         } else {
             ToastAndroid.showWithGravityAndOffset('Não há itens coletados', ToastAndroid.SHORT, ToastAndroid.TOP, 0, 35)
         }
-        navigation.goBack()
+        navigation.navigate("Home")
     }
 
     return (

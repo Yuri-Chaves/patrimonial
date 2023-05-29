@@ -48,13 +48,13 @@ export function Home() {
                         data.estab_coletado = estab.num_estab
                         data.coleted_at_dt = new Date().toLocaleDateString()
                         data.coleted_at_hr = new Date().toLocaleTimeString('pt-BR')
-                        if(data.nome_equip){
-                            if(data.empresa_coletado == data.empresa && data.estab_coletado == data.estab){
+                        if (data.nome_equip) {
+                            if (data.empresa_coletado == data.empresa && data.estab_coletado == data.estab) {
                                 data.status = 'Verificado'
-                            }else{
+                            } else {
                                 data.status = 'Divergência'
                             }
-                        }else{
+                        } else {
                             data.status = 'Pendente'
                         }
                     })
@@ -105,6 +105,7 @@ export function Home() {
                 <InputContainer>
                     <FontAwesome5 name="barcode" size={14} color={gray} />
                     <Input
+                        autoFocus={true}
                         inputMode='numeric'
                         keyboardType='numeric'
                         maxLength={7}

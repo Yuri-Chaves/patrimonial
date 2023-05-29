@@ -65,6 +65,12 @@ export function EstabsList() {
         return <ListItem data={item} toggleEstab={() => toggleEstab(item)} />
     }
 
+    useEffect(() =>{
+        Keyboard.addListener('keyboardDidHide', () => {
+            inputRef.current?.blur()
+        })
+    }, [])
+
     return (
         <>
             <Container>

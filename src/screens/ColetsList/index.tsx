@@ -148,10 +148,10 @@ export function ColetsList() {
                             <MaterialCommunityIcons name="check" size={iconLength} color="white" />
                         )}
                         {item.status === "Divergência" && (
-                            <MaterialCommunityIcons name="block-helper" size={iconLength} color="white" />
+                            <MaterialCommunityIcons name="alert" size={iconLength} color="white" />
                         )}
                         {item.status === "Inexistente" && (
-                            <MaterialCommunityIcons name="alert" size={iconLength} color="white" />
+                            <MaterialCommunityIcons name="block-helper" size={iconLength} color="white" />
                         )}
                     </Line>
                     <InfosContainer>

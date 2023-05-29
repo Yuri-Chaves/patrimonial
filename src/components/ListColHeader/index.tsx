@@ -39,7 +39,7 @@ export function ListColHeader() {
     return (
         <Container>
             <BtnContainer>
-                <Pressable width={netInfo.isConnected && itmsCol.length > 0 ? '50%' : '100%'} bgColor="#F6EAEA" borderColor="#D40000" onPress={() => navigation.goBack()}>
+                <Pressable width={netInfo.isConnected && itmsCol.length > 0 ? '50%' : '100%'} bgColor="#F6EAEA" borderColor="#D40000" onPress={() => navigation.navigate("Home")}>
                     <Text fontWeight={600} textColor="#D40000">Voltar</Text>
                     <MaterialCommunityIcons name="reply" size={14} color='#D40000' />
                 </Pressable>

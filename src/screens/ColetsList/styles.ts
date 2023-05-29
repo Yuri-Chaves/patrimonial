@@ -48,12 +48,12 @@ export const Infos = styled.View<Props>`
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    min-width: 108px;
 `
 export const Info = styled.View<Props>`
     flex-direction: row;
     align-items: center;
     gap: 4px;
+    min-width: 140px;
 `
 export const Text = styled.Text<Props>`
     font-style: normal;
