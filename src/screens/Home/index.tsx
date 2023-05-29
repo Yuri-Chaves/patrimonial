@@ -74,6 +74,7 @@ export function Home() {
                 ToastAndroid.showWithGravityAndOffset('Coletado', ToastAndroid.SHORT, ToastAndroid.TOP, 15, 15)
             }
             setCod_coletado('')
+            inputRef.current?.focus()
         }
     }
 
