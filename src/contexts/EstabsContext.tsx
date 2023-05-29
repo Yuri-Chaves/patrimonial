@@ -24,6 +24,8 @@ type EstabsContextData = {
     setIsVisible: () => void;
     filter: boolean;
     setFiltered: () => void;
+    colLen: number;
+    setColLength: (n: number) => void;
     handleSend: () => void;
 }
 
@@ -44,6 +46,7 @@ export function EstabsProvider({ children }: EstabsProviderProps) {
     const [isSynced, setIsSynced] = useState(false)
     const [visible, setVisible] = useState(false)
     const [filter, setFilter] = useState(false)
+    const [colLen, setColLen] = useState(0)
 
     const navigation = useNavigation<StackNavigationProp<StackNavigationList>>()
 
@@ -55,6 +58,9 @@ export function EstabsProvider({ children }: EstabsProviderProps) {
     }
     function setFiltered() {
         setFilter(previusState => !previusState)
+    }
+    function setColLength(n: number) {
+        setColLen(n)
     }
 
     function toggleEstab(data: EstabProps) {
@@ -88,10 +94,12 @@ export function EstabsProvider({ children }: EstabsProviderProps) {
                 isSynced,
                 visible,
                 filter,
+                colLen,
                 toggleEstab,
                 setSynced,
                 setIsVisible,
                 setFiltered,
+                setColLength,
                 handleSend
             }}>
             {children}

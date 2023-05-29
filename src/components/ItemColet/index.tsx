@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { ItmcolModel } from "../../databases/models/itmcolModel";
+import { EstabsContext } from "../../contexts/EstabsContext";
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -26,6 +27,7 @@ type RouteDetailsParams = {
 
 export function ItemColet() {
     const iconLength = 16
+    const { colLen, setColLength } = useContext(EstabsContext)
     const route = useRoute<RouteProp<RouteDetailsParams>>()
     const navigation = useNavigation<StackNavigationProp<StackNavigationList>>()
 
@@ -34,6 +36,7 @@ export function ItemColet() {
         const item = await itmsCollection.query( Q.where('cod_coletado', Q.eq(cod))).fetch()
         await database.write( async () => {
             await item[0].destroyPermanently()
+            setColLength(colLen - 1)
             navigation.navigate("ColetsList")
         })
     }

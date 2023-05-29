@@ -42,7 +42,7 @@ type ApiData = {
 
 export function ColetsList() {
     const netInfo = useNetInfo()
-    const { filter, estab } = useContext(EstabsContext)
+    const { filter, estab, colLen, setColLength } = useContext(EstabsContext)
     const [itmsCol, setItmsCol] = useState<ItmcolModel[]>([])
     const iconLength = 16
 
@@ -57,10 +57,12 @@ export function ColetsList() {
                     Q.where('estab_coletado', Q.eq(estab.num_estab))
                 )
             ).fetch()
+            setColLength(response.length)
             setItmsCol(response)
         } else {
             const itmsCollection = database.get<ItmcolModel>('Item_coletado')
             const response = await itmsCollection.query().fetch()
+            setColLength(response.length)
             setItmsCol(response)
         }
     }
@@ -68,6 +70,10 @@ export function ColetsList() {
     useEffect(() => {
         fetchData()
     }, [filter])
+
+    useEffect(() => {
+        fetchData()
+    }, [colLen])
 
     async function getPatrimData(item: ItmcolModel) {
         try {
