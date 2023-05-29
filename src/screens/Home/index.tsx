@@ -75,7 +75,6 @@ export function Home() {
             }
             setCod_coletado('')
         }
-        inputRef.current?.focus()
     }
 
     const handleChange = (e: string) => {
@@ -105,7 +104,6 @@ export function Home() {
                 <InputContainer>
                     <FontAwesome5 name="barcode" size={14} color={gray} />
                     <Input
-                        // autoFocus={true}
                         inputMode='numeric'
                         keyboardType='numeric'
                         maxLength={7}

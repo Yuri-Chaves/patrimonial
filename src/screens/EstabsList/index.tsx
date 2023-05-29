@@ -56,18 +56,6 @@ export function EstabsList() {
         }
     }, [search])
 
-    useEffect(() => {
-        setTimeout(() => {
-            inputRef.current?.focus()
-        }, 200);
-    }, [])
-
-    useEffect(() =>{
-        Keyboard.addListener('keyboardDidHide', () => {
-            inputRef.current?.blur()
-        })
-    }, [])
-
     const searching = (e: string) => {
         setSearch(e)
         fetchData()
@@ -87,7 +75,6 @@ export function EstabsList() {
                 <SearchContainer style={styles.searchContainerBorders}>
                     <SearchContent>
                         <SearchInput
-                            // autoFocus={true}
                             placeholder='Buscar estab'
                             placeholderTextColor='#BDBDBD'
                             inputMode='text'
