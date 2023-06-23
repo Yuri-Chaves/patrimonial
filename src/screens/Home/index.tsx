@@ -1,5 +1,6 @@
 import React, { useContext, useState, useRef } from "react";
 import { ImageBackground, Modal, StyleSheet, Switch, TextInput, ToastAndroid } from "react-native";
+import { useNetInfo } from "@react-native-community/netinfo";
 
 import { FontAwesome5 } from '@expo/vector-icons'
 
@@ -25,10 +26,14 @@ import {
     SwitchContainer,
     SwitchContent
 } from "./style";
+import instance from "../../helpers/instance";
+import { ApiData } from "../ColetsList";
 
 export function Home() {
     const primary = "#005FDF"
     const gray = "#333333"
+    const netInfo = useNetInfo()
+    const [modalInfo, setModalInfo] = useState<boolean>(false)
     const [isEnabled, setIsEnabled] = useState<boolean>(false);
     const [cod_coletado, setCod_coletado] = useState<string>('')
 
@@ -46,7 +51,7 @@ export function Home() {
                     await dbData[0].update(data => {
                         data.empresa_coletado = estab.empresa
                         data.estab_coletado = estab.num_estab
-                        data.coleted_at_dt = new Date().toLocaleDateString()
+                        data.coleted_at_dt = new Date().toLocaleDateString('pt-BR')
                         data.coleted_at_hr = new Date().toLocaleTimeString('pt-BR')
                         if (data.nome_equip) {
                             if (data.empresa_coletado == data.empresa && data.estab_coletado == data.estab) {
@@ -61,16 +66,46 @@ export function Home() {
                 })
                 ToastAndroid.showWithGravityAndOffset('Atualizado', ToastAndroid.SHORT, ToastAndroid.TOP, 15, 15)
             } else {
-                await database.write(async () => {
-                    await database.get<ItmcolModel>("Item_coletado").create(data => {
-                        data.cod_coletado = cod_coletado
-                        data.empresa_coletado = estab.empresa
-                        data.estab_coletado = estab.num_estab
-                        data.coleted_at_dt = new Date().toLocaleDateString()
-                        data.coleted_at_hr = new Date().toLocaleTimeString('pt-BR')
-                        data.status = 'Pendente'
+                if (netInfo.isConnected) {
+                    const apiData = await (await instance.get<ApiData>(`/compare/${cod_coletado}`)).data
+                    await database.write(async () => {
+                        await database.get<ItmcolModel>("Item_coletado").create(data => {
+                            data.cod_coletado = cod_coletado
+                            data.empresa_coletado = estab.empresa
+                            data.estab_coletado = estab.num_estab
+                            data.coleted_at_dt = new Date().toLocaleDateString('pt-BR')
+                            data.coleted_at_hr = new Date().toLocaleTimeString('pt-BR')
+                            data.nome_equip = apiData.nome_equip
+                            data.tipo_equip = apiData.tipo_equip
+                            data.placa = apiData.placa
+                            data.empresa = apiData.empresa
+                            data.estab = apiData.estab
+                            data.setor = apiData.setor
+                            data.local = apiData.local
+                            data.dt_atual = apiData.dt_atual
+                            if (data.nome_equip) {
+                                if (data.empresa_coletado == apiData.empresa && data.estab_coletado == apiData.estab) {
+                                    data.status = 'Verificado'
+                                } else {
+                                    data.status = 'Divergência'
+                                }
+                            }
+                        })
                     })
-                })
+                    const item =  await itmcolCollection.query(Q.where('cod_coletado', Q.like(`${cod_coletado}`))).fetch()
+                    navigation.navigate('Item_Col', item[0])
+                } else {
+                    await database.write(async () => {
+                        await database.get<ItmcolModel>("Item_coletado").create(data => {
+                            data.cod_coletado = cod_coletado
+                            data.empresa_coletado = estab.empresa
+                            data.estab_coletado = estab.num_estab
+                            data.coleted_at_dt = new Date().toLocaleDateString('pt-BR')
+                            data.coleted_at_hr = new Date().toLocaleTimeString('pt-BR')
+                            data.status = 'Pendente'
+                        })
+                    })
+                }
                 ToastAndroid.showWithGravityAndOffset('Coletado', ToastAndroid.SHORT, ToastAndroid.TOP, 15, 15)
             }
             setCod_coletado('')
@@ -100,7 +135,7 @@ export function Home() {
             <Container>
                 <TextView>
                     <Text><FontAwesome5 name="store-alt" size={14} color={gray} />  Estab selecionado:</Text>
-                    <Text textColor={primary} fontWeight={700}>{(estab.nome).charAt(0) + (estab.nome).slice(1).toLocaleLowerCase()}</Text>
+                    <Text textColor={primary} style={{ textTransform: 'capitalize' }} fontWeight={700} >{estab.nome}</Text>
                 </TextView>
                 <InputContainer>
                     <FontAwesome5 name="barcode" size={14} color={gray} />
