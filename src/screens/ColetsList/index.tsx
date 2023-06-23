@@ -27,7 +27,7 @@ import { StackNavigationProp } from '@react-navigation/stack'
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-type ApiData = {
+export type ApiData = {
     nome_equip: string;
     cod_equip: string;
     tipo_equip: number;
@@ -52,9 +52,15 @@ export function ColetsList() {
         if (filter) {
             const itmsCollection = database.get<ItmcolModel>('Item_coletado')
             const response = await itmsCollection.query(
-                Q.and(
-                    Q.where('empresa_coletado', Q.eq(estab.empresa)),
-                    Q.where('estab_coletado', Q.eq(estab.num_estab))
+                Q.or(
+                    Q.and(
+                        Q.where('empresa_coletado', Q.eq(estab.empresa)),
+                        Q.where('estab_coletado', Q.eq(estab.num_estab))
+                    ),
+                    Q.and(
+                        Q.where('empresa', Q.eq(estab.empresa)),
+                        Q.where('estab', Q.eq(estab.num_estab))
+                    )
                 )
             ).fetch()
             setColLength(response.length)

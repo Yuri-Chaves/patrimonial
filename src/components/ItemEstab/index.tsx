@@ -46,10 +46,6 @@ const Icon: any = ({ tp_item, textColor }: Icon) => {
     }
 }
 
-function test() {
-    alert('Click')
-}
-
 export function ListItem({ data, toggleEstab }: Props) {
     const { estab } = useContext(EstabsContext)
     const background = data.nome === estab.nome ? '#005FDF' : '#EEF6FF'
