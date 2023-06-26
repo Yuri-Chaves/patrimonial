@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FlatList, ListRenderItemInfo } from 'react-native';
+import { FlatList, ListRenderItemInfo, ToastAndroid } from 'react-native';
 import { useNetInfo } from "@react-native-community/netinfo";
 
 import {
@@ -26,6 +26,7 @@ import { StackNavigationList } from "../../routes/app.routes";
 import { StackNavigationProp } from '@react-navigation/stack'
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { AxiosError } from 'axios';
 
 export type ApiData = {
     nome_equip: string;
@@ -104,11 +105,17 @@ export function ColetsList() {
                 })
             })
         } catch (error) {
-            await database.write(async () => {
-                await item.update(data => {
-                    data.status = 'Inexistente'
+            const err = error as AxiosError
+            if (err.code == 'ERR_NETWORK') {
+                ToastAndroid.showWithGravityAndOffset('Servidor offline', ToastAndroid.SHORT, ToastAndroid.BOTTOM, 15, 15)
+            }
+            if (err.code == 'ERR_BAD_RESPONSE') {
+                await database.write(async () => {
+                    await item.update(data => {
+                        data.status = 'Inexistente'
+                    })
                 })
-            })
+            }
         }
     }
 

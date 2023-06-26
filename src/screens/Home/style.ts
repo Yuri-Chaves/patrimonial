@@ -79,3 +79,22 @@ export const SwitchContent = styled.View`
     justify-content: center;
     gap: 8px;
 `;
+export const LogoutContainer = styled.View`
+    position: absolute;
+    width: 100%;
+    top: 32px;
+    padding: 0 32px 0 16px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+`
+export const Logout = styled.Pressable`
+    padding: 8px;
+    background-color: #F40000;
+    border-radius: 32px;
+`
+export const UserName = styled.Text`
+    color: #004A8F;
+    font-size: 18px;
+    font-weight: 600;
+`

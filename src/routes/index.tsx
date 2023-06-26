@@ -2,14 +2,17 @@ import React, { useContext } from "react";
 
 import { AppRoutes } from "./app.routes";
 import { SyncRoutes } from "./sync.routes";
+import { AuthRoutes } from "./auth.routes";
 
 import { EstabsContext } from "../contexts/EstabsContext";
 
 function Routes() {
-    const { isSynced } = useContext(EstabsContext)
+    const { isSynced, isAuth } = useContext(EstabsContext)
 
     return (
-        isSynced ? <AppRoutes /> : <SyncRoutes />
+        isSynced && isAuth ? <AppRoutes /> :
+            isSynced && !isAuth ? <AuthRoutes /> :
+                <SyncRoutes />
     )
 
 }
